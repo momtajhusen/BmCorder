@@ -2,6 +2,11 @@
   "expo": {
     "name": "FinancialManagement",
     "slug": "FinancialManagement",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "0560f5b9-1419-487c-9f5e-31a5b2309155"
+      }
+    }
   }
 }
