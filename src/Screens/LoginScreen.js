@@ -6,6 +6,9 @@ import Button from '../Components/button';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import apiClient from '../apiClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Animatable from 'react-native-animatable';
+
 
 
 // create a component
@@ -17,6 +20,8 @@ const LoginScreen = () => {
         const [password, setPassword] = useState('');
         const [phoneMessage, setPhoneMessage] = useState('');
         const [passwordMessage, setPasswordMessage] = useState('');
+        const [isLoading, setIsLoading] = useState(false);
+
 
 
     // Login function
@@ -28,6 +33,10 @@ const LoginScreen = () => {
             setPhoneMessage('Please fill phone');
             formValidation = false;
         }
+        else if (phone.length < 10) {
+            setPhoneMessage('Number must be at 10 digit');
+            formValidation = false;
+          }
         else {
             setPhoneMessage('');
         }
@@ -46,13 +55,15 @@ const LoginScreen = () => {
         // If everything is valid, proceed with login action
         if (formValidation) {
             try {
+                setIsLoading(true);
                 const response = await apiClient.post('/login', {
                     phone:phone,
                     password,
                 });
 
                 if (response.data.status) {
-                    navigation.navigate('ProfileScreen',  { data: response.data}); // Navigate to your desired screen
+                    navigation.navigate('ProfileScreen',  { data: response.data}); 
+                    await AsyncStorage.setItem('loginUser', 'true');
                 } else {
                     Alert.alert('Login failed', response.data.message || 'Something went wrong');
                     console.log(response.data);
@@ -61,7 +72,9 @@ const LoginScreen = () => {
                 Alert.alert('Error', error.response?.data?.message || 'Something went wrong');
                 console.log(error.response?.data?.message);
 
-            }
+            } finally {
+                setIsLoading(false);
+              } 
         }
     };
 
@@ -73,28 +86,37 @@ const LoginScreen = () => {
 
              <View className="mt-20">
                 <View className=' flex-column items-center '>
-                <Image 
+                <Animatable.Image 
+                animation="fadeIn"
+                duration={2000}
+                resizeMode="contain"
                source={require('../../assets/images/logo-1.png')} 
-               style={{ width: 150, height: 150}}
+               style={{ width: 200, height: 200}}
               />
                 </View>
 
-              <View className="p-5">
+              <View className="p-5 pt-0">
                   <Text className="mb-3" style={{fontWeight:"bold", fontSize:23}}>Sign In</Text>
                   <View className="mb-3">
-                    <Text>Hi ! Welcome back, you</Text>
-                    <Text>have been missed </Text>
+                    <Text style={{fontSize:17, color:"#888"}}>Hi ! Welcome back, you {'\n'}have been missed</Text>
                   </View>
 
                    <View>
-
+                   
+                   <Animatable.View
+                   animation="fadeInUp"
+                   duration={1000} 
+                   >
                    <Input 
                         onChangeText={setPhone}
                         Lefticon="phone-android" 
                         keyboardType="phone-pad"  
                         inputTitle="Phone" 
-                        placeholder="9815XXXXXX"  
+                        placeholder="9815XXXXXX" 
+                        value={phone} 
+                        showCounter={true}
                         message={phoneMessage} 
+                        maxLength={10}
                     /> 
 
                      <View>
@@ -105,17 +127,29 @@ const LoginScreen = () => {
                           Righticon="remove-red-eye" 
                           inputTitle="Password" 
                           placeholder="password" 
-                          message={passwordMessage} /> 
+                          message={passwordMessage} 
+                          value={password}
+                          maxLength={20}
+                          showCounter={true}
+                          /> 
                         <TouchableOpacity className="items-end">
                            <Text className="text-end font-bold underline underline-offset-2">Forgot password ?</Text>
                         </TouchableOpacity>
                      </View>
+                     </Animatable.View>
 
-                     <Button title="Sign In"  onPress={Login} />
+                     <Button 
+                       title="Sign In"  
+                       onPress={Login} 
+                       loading={isLoading}
+                    />
                         
 
                     {/* Or Line  */}
-                    <View className="flex-row justify-center items-center space-x-3">
+                    <Animatable.View 
+                       animation="slideInLeft"
+                       duration={1000} 
+                    className="flex-row justify-center items-center space-x-3">
                        <View className="flex-row mt-5" style={{height:"2px", width:"40%", backgroundColor:"#ddd"}}>
                            <Text style={{fontSize:0}}></Text>
                        </View>
@@ -123,24 +157,27 @@ const LoginScreen = () => {
                        <View className="flex-row mt-5" style={{height:"2px", width:"40%", backgroundColor:"#ddd"}}>
                            <Text style={{fontSize:0}}></Text>
                        </View>
-                    </View>
+                    </Animatable.View>
 
 
-                    <View className="flex-row justify-center space-x-5 mt-5">
+                    <Animatable.View    
+                        animation="zoomIn"
+                        duration={1000} 
+                        className="flex-row justify-center space-x-5 mt-5">
                         <TouchableOpacity className="rounded-full justify-center items-center"  style={{borderWidth:1, borderColor:"#ddd", width:40, height:40 }}>
                             <MaterialCommunityIcons name='google' size={23} />   
                         </TouchableOpacity>
                         <TouchableOpacity className="rounded-full justify-center items-center"  style={{borderWidth:1, borderColor:"#ddd", width:40, height:40 }}>
                             <MaterialCommunityIcons name='apple' size={23} />   
                         </TouchableOpacity>
-                    </View> 
+                    </Animatable.View> 
 
                     <View>
 
                     <View className="flex-row justify-center mt-8 space-y-6">
 
                             <View className="flex-row">
-                                <Text>Don’t have an account?</Text>
+                                <Text>Don’t have an account? </Text>
                                 <TouchableOpacity>
                                     <Text className="underline underline-offset-2" style={{fontWeight:"bold"}}  onPress={() => navigation.navigate('SignupScreen')}> Sign Up</Text>
                                 </TouchableOpacity>
@@ -148,8 +185,7 @@ const LoginScreen = () => {
                             </View>
 
                            <View className="mt-8 text-center flex-column justify-center items-center">
-                             <Text>By login or sign up, you agree to our terms of use and</Text>
-                             <Text>privacy policy</Text>
+                             <Text className="text-center">By login or sign up, you agree to our terms of use and privacy policy</Text>
                            </View>
 
                     </View>
@@ -163,15 +199,17 @@ const LoginScreen = () => {
               </View>
              </View>
 
-             
-              <View className='flex-row justify-between'>
-                      <Image
+              <View className='flex-row justify-between bg-red-100'>
+                      <Animatable.Image
+                         animation="slideInLeft"
+                         duration={2000}
+                        className="absolute bottom-0 left-0"
                         source={require('../../assets/images/logo4.png')} 
-                        style={{ width: 150, height: 150}}
+                        style={{ width: 200, height: 200}}
                         />
-                      <View></View>
+              <View></View>
 
-                </View>
+            </View>
        
         </View>
     );

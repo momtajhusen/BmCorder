@@ -1,10 +1,7 @@
-//import liraries
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
-
-// create a component
 const Input = ({
     inputTitle,
     value,
@@ -19,75 +16,83 @@ const Input = ({
     message,
     maxLength,
     showCounter = false,
-    inputType // New prop for input type
+    inputType
   }) => {
 
     const [isFocused, setIsFocused] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(secureTextEntry); // State to manage visibility
+
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible); // Toggle visibility state
+    };
 
     return (
       <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        {inputTitle && (
-          <View style={styles.titleContainer}>
-            <Text className="mb-1" style={{ color: "black", fontWeight:"bold" }}>
-              {inputTitle}
-            </Text>
-            {showCounter && maxLength && (
-              <Text style={[styles.charCount, { color: "#888"}]}>
-                {value.length}/{maxLength}
+        <View style={styles.inputContainer}>
+          {inputTitle && (
+            <View style={styles.titleContainer}>
+              <Text className="mb-1" style={{ color: "black", fontWeight: "bold" }}>
+                {inputTitle}
               </Text>
+              {showCounter && maxLength && (
+                <Text style={[styles.charCount, { color: "#888" }]}>
+                  {value.length}/{maxLength}
+                </Text>
+              )}
+            </View>
+          )}
+
+          <View className="flex-row items-center px-4" style={styles.inputMain}>
+            {Lefticon && (
+              <MaterialIcons
+                name={Lefticon}
+                size={20}
+                color="#ccc"
+                style={styles.icon}
+              />
+            )}
+            <TextInput
+              className="flex-1"
+              style={[
+                styles.input,
+                style,
+              ]}
+              onChangeText={onChangeText}
+              value={value}
+              placeholder={placeholder}
+              placeholderTextColor="#888"
+              keyboardType={keyboardType}
+              secureTextEntry={isPasswordVisible} // Control visibility
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              maxLength={maxLength}
+            />
+            {Righticon && (
+              <TouchableOpacity
+                onPress={togglePasswordVisibility} // Toggle visibility on press
+              >
+                <MaterialIcons
+                  name={isPasswordVisible ? "visibility-off" : "visibility"} // Change icon based on visibility
+                  size={20}
+                  color="#ccc"
+                  style={styles.icon}
+                />
+              </TouchableOpacity>
             )}
           </View>
-        )}
 
-        <View className="flex-row items-center px-4" style={styles.inputMain}>
-        {Lefticon && (
-          <MaterialIcons
-            name={Lefticon}
-            size={20}
-            color="#ccc"
-            style={styles.icon}
-          />
-        )}
-        <TextInput
-          className="flex-1"
-          style={[
-            styles.input,
-            style,
-          ]}
-          onChangeText={onChangeText}
-          value={value}
-          placeholder={placeholder}
-          placeholderTextColor= "#888"
-          keyboardType={keyboardType}
-          secureTextEntry={secureTextEntry}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          maxLength={maxLength}
-        />
-                {Righticon && (
-          <MaterialIcons
-            name={Righticon}
-            size={20}
-            color="#ccc"
-            style={styles.icon}
-          />
-        )}
+          {message && <Text className="px-1" style={{ color: "red" }}>{message}</Text>}
         </View>
-
-        {message && <Text className="px-1" style={{ color: "red" }}>{message}</Text>}
       </View>
-    </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
       flexDirection: 'row',
       alignItems: 'center',
       marginVertical: 0,
-      marginBottom:8
+      marginBottom: 8
     },
     icon: {
       marginRight: 10,
@@ -101,39 +106,26 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: 1,
-      fontWeight:"bold"
+      fontWeight: "bold"
     },
     charCount: {
       fontSize: 14,
       color: 'grey',
     },
-    inputMain:{
+    inputMain: {
       height: 50,
       borderRadius: 5,
       fontSize: 15,
-    //   fontWeight: 'bold',
-      color:  'black',
+      color: 'black',
       borderWidth: 1,
       borderColor: '#888',
-      marginBottom:2,
+      marginBottom: 2,
     },
     input: {
       height: 50,
       fontSize: 15,
-      color:  'black',
-      // borderWidth:1
+      color: 'black',
     },
-    placeholder: {
-      position: 'absolute',
-      top: 20,
-      left: 10,
-      fontSize: 15,
-      fontWeight: 'normal',
-      color: 'grey',
-    },
-  });
+});
 
- 
-
-//make this component available to the app
 export default Input;

@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Button from '../Components/button';
 import { useNavigation } from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
+
 
 // create a component
 const WelcomeScreen = () => {
@@ -13,20 +15,27 @@ const WelcomeScreen = () => {
         <View className='flex-1 align-center'>
             <View className='flex-row justify-between'>
             
-            <Image 
+            <Animatable.Image
+                animation="slideInLeft"
+                duration={2000}
                 source={require('../../assets/images/logo.png')} 
                 style={{ width: 250, height: 250}}
                 />
-                <Image 
+                      <Animatable.Image
+                         animation="slideInRight"
+                         duration={2000}
                 source={require('../../assets/images/Mask group.png')} 
                 style={{ width: 130, height: 130}}
                 />
             </View>
 
             <View className='flex-column space-y-4 items-center'>
-                <Image 
+            <Animatable.Image 
+                animation="fadeInUp"
+                duration={2000}
                 source={require('../../assets/images/logo-1.png')} 
-                style={{ width: 200, height: 200}}
+                style={{ width: 230, height: 230}}
+                resizeMode="contain"
                 />
                 <View>
                 <Text>Sparkle & Shine  Transform </Text>
