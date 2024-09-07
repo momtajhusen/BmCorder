@@ -21,7 +21,7 @@ const SplashScreen = () => {
             navigation.replace('WelcomeScreen');
           } else if (loginUser === 'true') {
             // If key exists and value is 'true', navigate to ProfileScreen
-            navigation.replace('ProfileScreen');
+            navigation.replace('LoginScreen');
           } else {
             // If key exists but value is not 'true', navigate to LoginScreen
             navigation.replace('LoginScreen');

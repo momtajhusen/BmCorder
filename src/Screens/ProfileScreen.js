@@ -43,9 +43,11 @@ const ProfileScreen = ({route}) => {
                 duration={2000}
                 source={require('../../assets/images/logo-1.png')} 
                 style={{ width: 200, height: 200}}
+                resizeMode="contain"
                 />
                 
                 <View>
+                <Text className="text-center"  style={{ fontWeight: 'bold', fontSize: 20 }}>Welcome</Text>
                 <TypeWriter
                         style={{ fontWeight: 'bold', fontSize: 20 }}
                         typing={1}
